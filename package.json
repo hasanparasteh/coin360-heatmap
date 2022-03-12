@@ -1,0 +1,23 @@
+{
+  "name": "screen-coin360",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node src/screenshot.js",
+    "build": "pkg src/screenshot.js --options expose-gc --out-path dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^13.5.0"
+  },
+  "pkg": {
+    "scripts": "src/sreenshot.js",
+    "targets": [
+      "node16-linux-arm64"
+    ],
+    "outputPath": "dist"
+  }
+}
