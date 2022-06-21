@@ -7,7 +7,7 @@ const fs = require("fs");
 async function take_screenshot(filename) {
     const browser = await puppeteer.launch({
         executablePath: args[0],
-        headless: true,
+        headless: false,
         ignoreHTTPSErrors: true,
         args: [`--window-size=${1240},${796}`],
         defaultViewport: {
@@ -17,7 +17,9 @@ async function take_screenshot(filename) {
     });
     const page = await browser.newPage();
 
-    await page.goto('https://coin360.com/').then(async () => {
+    await page.goto('https://coin360.com/', {
+        waitUntil: 'domcontentloaded'
+    }).then(async () => {
         try {
             console.log("Waits for page fully loaded")
             await page.waitForNetworkIdle({ timeout: 10 * 1000 })
@@ -36,12 +38,12 @@ async function take_screenshot(filename) {
         } catch (error) {
             console.log("The element didn't appear.")
         }
-        try {
-            await page.waitForSelector("button.TopLeaderboard__Close", { timeout: 5000 })
-            await page.click('button.TopLeaderboard__Close');
-        } catch (error) {
-            console.log("The element didn't appear.");
-        }
+        // try {
+        //     await page.waitForSelector("button.TopLeaderboard__Close", { timeout: 5000 })
+        //     await page.click('button.TopLeaderboard__Close');
+        // } catch (error) {
+        //     console.log("The element didn't appear.");
+        // }
         try {
             await page.waitForSelector("button.StickyCorner__Close", { timeout: 5000 })
             await page.click('button.StickyCorner__Close');
@@ -81,4 +83,8 @@ const main = async () => {
     console.log("Enjoy your file...\n");
 }
 
-main()
+try {
+    main()
+} catch (error) {
+    console.log("Can't take a screenshot :(");
+}
