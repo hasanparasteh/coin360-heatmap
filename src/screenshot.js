@@ -7,7 +7,7 @@ const fs = require("fs");
 async function take_screenshot(filename) {
     const browser = await puppeteer.launch({
         executablePath: args[0],
-        headless: false,
+        headless: true,
         ignoreHTTPSErrors: true,
         args: [`--window-size=${1240},${796}`],
         defaultViewport: {
@@ -17,8 +17,11 @@ async function take_screenshot(filename) {
     });
     const page = await browser.newPage();
 
+    console.log("Starting App...");
+
     await page.goto('https://coin360.com/', {
-        waitUntil: 'domcontentloaded'
+        waitUntil: 'domcontentloaded',
+        timeout: 300 * 1000
     }).then(async () => {
         try {
             console.log("Waits for page fully loaded")
@@ -28,7 +31,7 @@ async function take_screenshot(filename) {
         }
         // Hide some html elements
         console.log("Adds stylesheets")
-        await page.addStyleTag({ content: 'header, div.MapFiltersContainer, section.NewsFeed, .TreeMaps__ZoomControls { display: none; }' })
+        await page.addStyleTag({ content: 'header, div.MapFiltersContainer, section.NewsFeed, .TreeMaps__ZoomControls, .TopLeaderboard { display: none; }' })
 
         // Remove Ads
         console.log("Starts to remove ads...")
@@ -38,12 +41,6 @@ async function take_screenshot(filename) {
         } catch (error) {
             console.log("The element didn't appear.")
         }
-        // try {
-        //     await page.waitForSelector("button.TopLeaderboard__Close", { timeout: 5000 })
-        //     await page.click('button.TopLeaderboard__Close');
-        // } catch (error) {
-        //     console.log("The element didn't appear.");
-        // }
         try {
             await page.waitForSelector("button.StickyCorner__Close", { timeout: 5000 })
             await page.click('button.StickyCorner__Close');
