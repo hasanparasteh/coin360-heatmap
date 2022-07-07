@@ -6,18 +6,17 @@ const fs = require("fs");
 
 async function take_screenshot(filename) {
     const browser = await puppeteer.launch({
+        ignoreDefaultArgs: ['--disable-extensions'],
         executablePath: args[0],
         headless: true,
+        args: ['--use-gl=egl'],
         ignoreHTTPSErrors: true,
-        args: [`--window-size=${1240},${796}`],
-        defaultViewport: {
-            width: 796,
-            height: 1240
-        }
     });
     const page = await browser.newPage();
 
     console.log("Starting App...");
+
+    await page.setViewport({ width: 796, height: 1240 })
 
     await page.goto('https://coin360.com/', {
         waitUntil: 'domcontentloaded',
@@ -31,24 +30,27 @@ async function take_screenshot(filename) {
         }
         // Hide some html elements
         console.log("Adds stylesheets")
-        await page.addStyleTag({ content: 'header, div.MapFiltersContainer, section.NewsFeed, .TreeMaps__ZoomControls, .TopLeaderboard { display: none; }' })
+        await page.addStyleTag({ content: 'header, div.MapFiltersContainer, section.NewsFeed, .TreeMaps__ZoomControls, .TopLeaderboard, .styles_footer__UeNzk  { display: none; }' })
 
         // Remove Ads
         console.log("Starts to remove ads...")
+
         try {
-            await page.waitForSelector("button.CookiesBanner__AcceptButton", { timeout: 5000 })
-            await page.click('button.CookiesBanner__AcceptButton');
+            await page.waitForSelector("button.styles_close__wYQUC", { timeout: 5000 })
+            await page.click('button.styles_close__wYQUC');
         } catch (error) {
-            console.log("The element didn't appear.")
+            console.log("The element didn't appear.");
         }
+
         try {
-            await page.waitForSelector("button.StickyCorner__Close", { timeout: 5000 })
-            await page.click('button.StickyCorner__Close');
+            await page.waitForSelector("button.styles_acceptButton__Eoxnq", { timeout: 5000 })
+            await page.click('button.styles_acceptButton__Eoxnq');
         } catch (error) {
             console.log("The element didn't appear.");
         }
 
         console.log("takes a screen shot....")
+
         await page.screenshot({ path: filename });
 
         await browser.close();
